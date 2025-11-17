@@ -1,0 +1,124 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">{{assignment.title}}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Subject:</strong> {{assignment.subject.name}}</p>
+                        <p><strong>Staff:</strong> {{assignment.staff.admin.first_name}} {{assignment.staff.admin.last_name}}</p>
+                        <p><strong>Due Date:</strong> {{assignment.due_date}}</p>
+                        <hr>
+                        <p><strong>Description:</strong></p>
+                        <p>{{assignment.description}}</p>
+                    </div>
+                </div>
+
+                {% if submission %}
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Your Submission</h3>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Status:</strong> 
+                                {% if submission.status == 'submitted' %}
+                                    <span class="badge badge-info">Submitted</span>
+                                {% elif submission.status == 'graded' %}
+                                    <span class="badge badge-success">Graded</span>
+                                {% else %}
+                                    <span class="badge badge-warning">Pending</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Submitted At:</strong> {{submission.submitted_at|default:"Not submitted"}}</p>
+                            {% if submission.submission_file %}
+                            <p><strong>File:</strong> <a href="{{submission.submission_file.url}}" target="_blank">
+                                {{submission.submission_file.name}}</a></p>
+                            {% endif %}
+                            {% if submission.status == 'graded' %}
+                            <p><strong>Marks:</strong> {{submission.marks}}</p>
+                            <p><strong>Feedback:</strong> {{submission.feedback}}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card card-warning">
+                        <div class="card-header">
+                            <h3 class="card-title">Resubmit Assignment</h3>
+                        </div>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <div class="form-group">
+                                    <label for="id_submission_file">Upload File (PDF, DOC, DOCX):</label>
+                                    {{form.submission_file}}
+                                    {% if form.submission_file.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{form.submission_file.errors}}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Resubmit</button>
+                            </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Submit Assignment</h3>
+                        </div>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <div class="form-group">
+                                    <label for="id_submission_file">Upload File (PDF, DOC, DOCX):</label>
+                                    {{form.submission_file}}
+                                    {% if form.submission_file.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{form.submission_file.errors}}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Submit Assignment</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

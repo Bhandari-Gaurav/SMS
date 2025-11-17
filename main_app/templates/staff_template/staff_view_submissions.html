@@ -1,0 +1,77 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">{{assignment.title}} - Submissions</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Subject:</strong> {{assignment.subject.name}}</p>
+                        <p><strong>Due Date:</strong> {{assignment.due_date}}</p>
+                        <p><strong>Description:</strong> {{assignment.description}}</p>
+                    </div>
+                </div>
+
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Student Submissions</h3>
+                    </div>
+                    <div class="table p-2">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>ID</th>
+                                <th>Student Name</th>
+                                <th>Status</th>
+                                <th>Submitted At</th>
+                                <th>Marks</th>
+                                <th>Actions</th>
+                            </tr>
+                            {% for submission in submissions %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{submission.student.admin.first_name}} {{submission.student.admin.last_name}}</td>
+                                <td>
+                                    {% if submission.status == 'submitted' %}
+                                        <span class="badge badge-info">{{submission.get_status_display}}</span>
+                                    {% elif submission.status == 'graded' %}
+                                        <span class="badge badge-success">{{submission.get_status_display}}</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">{{submission.get_status_display}}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{submission.submitted_at|default:"Not Submitted"}}</td>
+                                <td>{{submission.marks|default:"-"}}</td>
+                                <td>
+                                    {% if submission.submission_file %}
+                                    <a href="{% url 'staff_view_submission' submission.id %}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{submission.submission_file.url}}" class="btn btn-success btn-sm" download>
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'staff_grade_submission' submission.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i> Grade
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No submissions yet</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

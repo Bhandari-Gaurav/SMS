@@ -3,6 +3,16 @@
 import os
 import sys
 
+# Python 3.14 compatibility fix
+if sys.version_info >= (3, 13):
+    import types
+    cgi = types.ModuleType('cgi')
+    def parse_header(line):
+        parts = line.split(';')
+        return parts[0], {}
+    cgi.parse_header = parse_header
+    sys.modules['cgi'] = cgi
+
 
 def main():
     """Run administrative tasks."""

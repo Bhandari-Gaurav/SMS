@@ -205,3 +205,60 @@ def student_view_result(request):
         'page_title': "View Results"
     }
     return render(request, "student_template/student_view_result.html", context)
+
+
+def student_view_assignments(request):
+    student = get_object_or_404(Student, admin=request.user)
+    course = student.course
+    assignments = Assignment.objects.filter(subject__course=course)
+    context = {
+        'assignments': assignments,
+        'page_title': "View Assignments"
+    }
+    return render(request, "student_template/student_view_assignments.html", context)
+
+
+def student_view_assignment_detail(request, assignment_id):
+    student = get_object_or_404(Student, admin=request.user)
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    
+    # Check if student has submitted
+    submission = AssignmentSubmission.objects.filter(
+        student=student, assignment=assignment
+    ).first()
+    
+    form = AssignmentSubmissionForm(request.POST or None, request.FILES or None, instance=submission if submission else None)
+    
+    context = {
+        'assignment': assignment,
+        'submission': submission,
+        'form': form,
+        'page_title': "Assignment Details"
+    }
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                if submission:
+                    # Update existing submission
+                    obj = form.save(commit=False)
+                    obj.status = 'submitted'
+                    obj.submitted_at = datetime.now()
+                    obj.save()
+                    messages.success(request, "Assignment resubmitted successfully")
+                else:
+                    # Create new submission
+                    obj = form.save(commit=False)
+                    obj.assignment = assignment
+                    obj.student = student
+                    obj.status = 'submitted'
+                    obj.submitted_at = datetime.now()
+                    obj.save()
+                    messages.success(request, "Assignment submitted successfully")
+                return redirect(reverse('student_view_assignment_detail', args=[assignment_id]))
+            except Exception as e:
+                messages.error(request, "Error submitting assignment: " + str(e))
+        else:
+            messages.error(request, "Form has errors!")
+    
+    return render(request, "student_template/student_assignment_detail.html", context)

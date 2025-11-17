@@ -243,7 +243,7 @@ Password: student
 - [x] Firebase Web Push Notifications
 - [x] Staff Add Student's Result
 - [x] Staff Edit Result Using CBVs (Class Based Views)
-- [x] Google CAPTCHA
+<!-- Google CAPTCHA removed -->
 - [x] Student View Result
 - [x] Change all links to be dynamic
 - [x] Code Restructure - Very Important
