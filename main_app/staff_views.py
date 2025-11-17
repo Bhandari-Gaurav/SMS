@@ -310,3 +310,106 @@ def fetch_student_result(request):
         return HttpResponse(json.dumps(result_data))
     except Exception as e:
         return HttpResponse('False')
+
+
+def staff_add_assignment(request):
+    staff = get_object_or_404(Staff, admin=request.user)
+    subjects = Subject.objects.filter(staff=staff)
+    form = AssignmentForm(request.POST or None)
+    context = {
+        'form': form,
+        'assignments': Assignment.objects.filter(staff=staff),
+        'page_title': 'Add Assignment'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                obj = form.save(commit=False)
+                obj.staff = staff
+                obj.save()
+                messages.success(request, "Assignment created successfully")
+                return redirect(reverse('staff_add_assignment'))
+            except Exception as e:
+                messages.error(request, "Error creating assignment: " + str(e))
+        else:
+            messages.error(request, "Form has errors!")
+    return render(request, "staff_template/staff_add_assignment.html", context)
+
+
+def staff_edit_assignment(request, assignment_id):
+    staff = get_object_or_404(Staff, admin=request.user)
+    assignment = get_object_or_404(Assignment, id=assignment_id, staff=staff)
+    form = AssignmentForm(request.POST or None, instance=assignment)
+    context = {
+        'form': form,
+        'assignment': assignment,
+        'page_title': 'Edit Assignment'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, "Assignment updated successfully")
+                return redirect(reverse('staff_add_assignment'))
+            except Exception as e:
+                messages.error(request, "Error updating assignment: " + str(e))
+        else:
+            messages.error(request, "Form has errors!")
+    return render(request, "staff_template/staff_edit_assignment.html", context)
+
+
+def staff_delete_assignment(request, assignment_id):
+    staff = get_object_or_404(Staff, admin=request.user)
+    assignment = get_object_or_404(Assignment, id=assignment_id, staff=staff)
+    try:
+        assignment.delete()
+        messages.success(request, "Assignment deleted successfully")
+    except Exception as e:
+        messages.error(request, "Error deleting assignment: " + str(e))
+    return redirect(reverse('staff_add_assignment'))
+
+
+def staff_view_assignment_submissions(request, assignment_id):
+    staff = get_object_or_404(Staff, admin=request.user)
+    assignment = get_object_or_404(Assignment, id=assignment_id, staff=staff)
+    submissions = AssignmentSubmission.objects.filter(assignment=assignment)
+    context = {
+        'assignment': assignment,
+        'submissions': submissions,
+        'page_title': 'Assignment Submissions'
+    }
+    return render(request, "staff_template/staff_view_submissions.html", context)
+
+
+def staff_view_submission(request, submission_id):
+    staff = get_object_or_404(Staff, admin=request.user)
+    submission = get_object_or_404(AssignmentSubmission, id=submission_id, assignment__staff=staff)
+    context = {
+        'submission': submission,
+        'page_title': 'View Submission'
+    }
+    return render(request, "staff_template/staff_view_submission.html", context)
+
+
+def staff_grade_submission(request, submission_id):
+    staff = get_object_or_404(Staff, admin=request.user)
+    submission = get_object_or_404(AssignmentSubmission, id=submission_id, assignment__staff=staff)
+    form = AssignmentGradeForm(request.POST or None, instance=submission)
+    context = {
+        'form': form,
+        'submission': submission,
+        'page_title': 'Grade Submission'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                obj = form.save(commit=False)
+                obj.status = 'graded'
+                obj.save()
+                messages.success(request, "Submission graded successfully")
+                return redirect(reverse('staff_view_assignment_submissions', args=[submission.assignment.id]))
+            except Exception as e:
+                messages.error(request, "Error grading submission: " + str(e))
+        else:
+            messages.error(request, "Form has errors!")
+    return render(request, "staff_template/staff_grade_submission.html", context)

@@ -110,6 +110,18 @@ urlpatterns = [
          name='edit_student_result'),
     path('staff/result/fetch/', staff_views.fetch_student_result,
          name='fetch_student_result'),
+    path("staff/assignment/add/", staff_views.staff_add_assignment,
+         name='staff_add_assignment'),
+    path("staff/assignment/edit/<int:assignment_id>/", staff_views.staff_edit_assignment,
+         name='staff_edit_assignment'),
+    path("staff/assignment/delete/<int:assignment_id>/", staff_views.staff_delete_assignment,
+         name='staff_delete_assignment'),
+    path("staff/assignment/submissions/<int:assignment_id>/", staff_views.staff_view_assignment_submissions,
+         name='staff_view_assignment_submissions'),
+    path("staff/submission/grade/<int:submission_id>/", staff_views.staff_grade_submission,
+         name='staff_grade_submission'),
+    path("staff/submission/view/<int:submission_id>/", staff_views.staff_view_submission,
+         name='staff_view_submission'),
 
 
 
@@ -129,5 +141,9 @@ urlpatterns = [
          name="student_view_notification"),
     path('student/view/result/', student_views.student_view_result,
          name='student_view_result'),
+    path('student/view/assignments/', student_views.student_view_assignments,
+         name='student_view_assignments'),
+    path('student/assignment/<int:assignment_id>/', student_views.student_view_assignment_detail,
+         name='student_view_assignment_detail'),
 
 ]

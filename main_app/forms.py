@@ -189,3 +189,40 @@ class EditResultForm(FormSettings):
     class Meta:
         model = StudentResult
         fields = ['session_year', 'subject', 'student', 'test', 'exam']
+
+
+class AssignmentForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(AssignmentForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Assignment
+        fields = ['title', 'description', 'subject', 'due_date']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+            'due_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+
+class AssignmentSubmissionForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(AssignmentSubmissionForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['submission_file']
+        widgets = {
+            'submission_file': forms.FileInput(attrs={'accept': '.pdf,.doc,.docx'}),
+        }
+
+
+class AssignmentGradeForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(AssignmentGradeForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['marks', 'feedback']
+        widgets = {
+            'feedback': forms.Textarea(attrs={'rows': 4}),
+        }

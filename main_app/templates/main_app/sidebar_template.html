@@ -350,6 +350,16 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    {% url 'staff_add_assignment' as staff_add_assignment %}
+                    <a href="{{staff_add_assignment}}" class="nav-link {% if staff_add_assignment == request.path %} active {% endif %}">
+                        <i class="nav-icon fas fa-file-upload"></i>
+                        <p>
+                           Add Assignment
+
+                        </p>
+                    </a>
+                </li>
           
 {% else %}
     <!-- Brand Logo -->
@@ -404,6 +414,16 @@
                         <i class="nav-icon fas fa-th"></i>
                         <p>
                             View Results
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    {% url 'student_view_assignments' as student_view_assignments %}
+                    <a href="{{ student_view_assignments }}" class="nav-link {% if student_view_assignments == request.path %} active {% endif %}">
+                        <i class="nav-icon fas fa-file-alt"></i>
+                        <p>
+                            View Assignments
+
                         </p>
                     </a>
                 </li>

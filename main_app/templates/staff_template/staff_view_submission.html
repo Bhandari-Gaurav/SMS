@@ -1,0 +1,44 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Submission by {{submission.student.admin.first_name}} {{submission.student.admin.last_name}}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Assignment:</strong> {{submission.assignment.title}}</p>
+                        <p><strong>Submitted At:</strong> {{submission.submitted_at|default:"Not Submitted"}}</p>
+                        <p><strong>Status:</strong> {{submission.get_status_display}}</p>
+                        <p><strong>Marks:</strong> {{submission.marks|default:"-"}}</p>
+                        <p><strong>Feedback:</strong> {{submission.feedback|default:"-"}}</p>
+                    </div>
+                </div>
+
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">File Preview</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if submission.submission_file %}
+                            <div class="mb-2">
+                                <a href="{{ submission.submission_file.url }}" class="btn btn-secondary" target="_blank">Open in new tab</a>
+                                <a href="{{ submission.submission_file.url }}" class="btn btn-success" download>Download</a>
+                                <a href="{% url 'staff_grade_submission' submission.id %}" class="btn btn-primary">Grade</a>
+                            </div>
+                            <iframe src="{{ submission.submission_file.url }}" width="100%" height="800px"></iframe>
+                        {% else %}
+                            <p>No file submitted.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
